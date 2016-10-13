@@ -7,9 +7,11 @@ defmodule SimpleTokenAuthentication.Mixfile do
     [app: :simple_token_authentication,
      version: @version,
      elixir: "~> 1.3",
+     description: description,
+     package: package,
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps()]
+     deps: deps]
   end
 
   # Configuration for the OTP application
