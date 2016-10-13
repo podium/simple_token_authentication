@@ -1,9 +1,11 @@
 defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
+	@version "0.1.0"
+
   def project do
     [app: :simple_token_authentication,
-     version: "0.1.0",
+     version: @version,
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -28,8 +30,26 @@ defmodule SimpleTokenAuthentication.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      plug: "~> 1.2.2",
-      credo: "~> 0.4.12"
+      {:plug, "~> 1.2.2"},
+      {:credo, "~> 0.4.12", only: [:dev, :test]}
+    ]
+  end
+
+  defp description do
+    """
+		A plug that checks for presence of a simple token for authentication
+    """
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs",  "README*"],
+      maintainers: ["Travis Elnicky", "Dhiman Swadia", "Arthur Weagel"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/SRVentures/simple_token_authentication",
+        "Docs" => "https://hexdocs.pm/simple_token_authentication/#{@version}/"
+      }
     ]
   end
 end
