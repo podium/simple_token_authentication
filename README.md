@@ -1,10 +1,16 @@
 # SimpleTokenAuthentication
 
-**TODO: Add description**
+## Usage
+### Phoenix Integration
+  - Add plug to your pipeline like so:
+  
+  ```elixir
+  pipeline :api do
+    plug SimpleTokenAuthentication
+  end
+  ```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
   1. Add `simple_token_authentication` to your list of dependencies in `mix.exs`:
 
@@ -20,5 +26,10 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     def application do
       [applications: [:simple_token_authentication]]
     end
+    ```
+
+  3. Configure your token in `config.exs`:
+    ```elixir
+    config :simple_token_authentication, token: "your-token-here"
     ```
 
