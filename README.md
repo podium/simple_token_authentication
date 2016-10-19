@@ -2,11 +2,20 @@
 
 ## Usage
 ### Phoenix Integration
-  - Add plug to your pipeline like so:
+  - Inside `web/router.ex` file, add plug to your pipeline like so:
   
   ```elixir
-  pipeline :api do
-    plug SimpleTokenAuthentication
+  defmodule MyApp.Router
+    use Phoenix.Router
+    
+    pipeline :api do
+      plug SimpleTokenAuthentication
+    end
+    
+    scope "/", MyApp do
+      pipe_through :api
+      get "/hello", HelloController, :hello
+    end
   end
   ```
 
