@@ -19,7 +19,7 @@ defmodule SimpleTokenAuthentication do
     else
       conn
       |> put_resp_content_type("application/json")
-      |> send_resp(401, "{ \"error\": \"Invalid shared key\" }")
+      |> send_resp(401, ~s({ "error": "Invalid shared key" }))
       |> halt
     end
   end
