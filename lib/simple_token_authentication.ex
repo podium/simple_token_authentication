@@ -9,10 +9,8 @@ defmodule SimpleTokenAuthentication do
 
   def call(conn, _opts) do
     token = Application.get_env(:simple_token_authentication, :token)
-    {_, val} = Enum.find conn.req_headers, {nil, nil}, fn
-      ({key, _}) ->
-        key == "authorization"
-    end
+
+    val = get_auth_header(conn)
 
     if token && val == token do
       conn
@@ -21,6 +19,13 @@ defmodule SimpleTokenAuthentication do
       |> put_resp_content_type("application/json")
       |> send_resp(401, ~s({ "error": "Invalid shared key" }))
       |> halt
+    end
+  end
+
+  defp get_auth_header(conn) do
+    case get_req_header(conn, "authorization") do
+      [val | _] -> val
+      _ -> nil
     end
   end
 end
