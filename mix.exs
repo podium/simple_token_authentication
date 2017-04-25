@@ -32,7 +32,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:plug, "~> 1.2.2"},
+      {:plug, "~> 1.3"},
       {:credo, "~> 0.4.12", only: [:dev, :test]}
     ]
   end
