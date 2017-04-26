@@ -33,7 +33,8 @@ defmodule SimpleTokenAuthentication.Mixfile do
   defp deps do
     [
       {:plug, "~> 1.3"},
-      {:credo, "~> 0.4.12", only: [:dev, :test]}
+      {:credo, "~> 0.4.12", only: [:dev, :test]},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
