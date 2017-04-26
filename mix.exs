@@ -1,12 +1,12 @@
 defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
-	@version "0.1.0"
+	@version "0.2.0"
 
   def project do
     [app: :simple_token_authentication,
      version: @version,
-     elixir: "~> 1.3",
+     elixir: "~> 1.4",
      description: description,
      package: package,
      build_embedded: Mix.env == :prod,
@@ -32,7 +32,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:plug, "~> 1.2.2"},
+      {:plug, "~> 1.3"},
       {:credo, "~> 0.4.12", only: [:dev, :test]}
     ]
   end
