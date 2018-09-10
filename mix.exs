@@ -18,7 +18,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :plug]]
   end
 
   # Dependencies can be Hex packages:
@@ -32,7 +32,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:plug, "~> 1.3"},
+      {:plug, "~> 1.4.3"},
       {:credo, "~> 0.4.12", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
