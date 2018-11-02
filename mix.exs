@@ -7,11 +7,11 @@ defmodule SimpleTokenAuthentication.Mixfile do
     [app: :simple_token_authentication,
      version: @version,
      elixir: "~> 1.4",
-     description: description,
-     package: package,
+     description: description(),
+     package: package(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps()]
   end
 
   # Configuration for the OTP application
@@ -40,7 +40,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
 
   defp description do
     """
-		A plug that checks for presence of a simple token for authentication
+		  A plug that checks for presence of a simple token for authentication
     """
   end
 
