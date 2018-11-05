@@ -12,7 +12,7 @@ defmodule SimpleTokenAuthentication do
 
     val = get_auth_header(conn)
 
-    if token && val == token do
+    if token && String.trim(token) != "" && val == token do
       conn
     else
       conn

@@ -27,6 +27,24 @@ defmodule SimpleTokenAuthenticationTest do
 		end
 	end
 
+  describe "empty token" do
+    test "returns a 401 status code" do
+      with_token("") do
+        # Create a test connection
+        conn =
+          :get
+          |> conn("/foo")
+          |> put_req_header("authorization", "")
+
+        # Invoke the plug
+        conn = SimpleTokenAuthentication.call(conn, @opts)
+
+        # Assert the response and status
+        assert conn.status == 401
+      end
+    end
+  end
+
   describe "with an invalid token" do
 		test "returns a 401 status code" do
       with_token("fake_token") do

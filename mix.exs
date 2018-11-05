@@ -1,17 +1,19 @@
 defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
-	@version "0.2.0"
+  @version "0.2.0"
 
   def project do
-    [app: :simple_token_authentication,
-     version: @version,
-     elixir: "~> 1.4",
-     description: description,
-     package: package,
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps]
+    [
+      app: :simple_token_authentication,
+      version: @version,
+      elixir: "~> 1.4",
+      description: description(),
+      package: package(),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -40,13 +42,13 @@ defmodule SimpleTokenAuthentication.Mixfile do
 
   defp description do
     """
-		A plug that checks for presence of a simple token for authentication
+    A plug that checks for presence of a simple token for authentication
     """
   end
 
   defp package do
     [
-      files: ["lib", "mix.exs",  "README*"],
+      files: ["lib", "mix.exs", "README*"],
       maintainers: ["Travis Elnicky", "Dhiman Swadia", "Arthur Weagel"],
       licenses: ["MIT"],
       links: %{
