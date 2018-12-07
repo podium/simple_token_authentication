@@ -1,13 +1,13 @@
 defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.3.0"
 
   def project do
     [
       app: :simple_token_authentication,
       version: @version,
-      elixir: "~> 1.4",
+      elixir: "~> 1.7",
       description: description(),
       package: package(),
       build_embedded: Mix.env() == :prod,
@@ -20,7 +20,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :plug]]
   end
 
   # Dependencies can be Hex packages:
@@ -34,9 +34,9 @@ defmodule SimpleTokenAuthentication.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:plug, "~> 1.3"},
-      {:credo, "~> 0.4.12", only: [:dev, :test]},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:credo, "~> 1.0", only: [:dev, :test]},
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:plug, ">= 1.3.0"}
     ]
   end
 
@@ -49,7 +49,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
   defp package do
     [
       files: ["lib", "mix.exs", "README*"],
-      maintainers: ["Travis Elnicky", "Dhiman Swadia", "Arthur Weagel"],
+      maintainers: ["Travis Elnicky", "Arthur Weagel"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/SRVentures/simple_token_authentication",
