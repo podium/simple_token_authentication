@@ -9,13 +9,23 @@
     use Phoenix.Router
     
     pipeline :api do
+      # Static value (don't do this in production)
+      plug SimpleTokenAuthentication, token: "your-token-here"
+      # Fetch from application env at compile time
       plug SimpleTokenAuthentication, token: Application.get_env(:my_app, :my_simple_token)
+      # Fetch from application env at run time
+      plug SimpleTokenAuthentication, token: fn -> Application.get_env(:my_app, :my_simple_token) end
+      #Fetch using non-anonymous function
+      plug SimpleTokenAuthentication, token: {MyApp.Router, :get_simple_token}
     end
+
     
     scope "/", MyApp do
       pipe_through :api
       get "/hello", HelloController, :hello
     end
+
+    def get_simple_token, do: Application.get_env(:my_app, :my_simple_token)
   end
   ```
   

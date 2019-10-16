@@ -4,6 +4,8 @@ defmodule SimpleTokenAuthenticationTest do
 
   def opts(opts \\ []), do: SimpleTokenAuthentication.init(opts)
 
+  def get_fake_token, do: "fake_token"
+
   defmacro with_token(token, do: expression) do
     quote do
       Application.put_env(:simple_token_authentication, :token, unquote(token))
@@ -135,6 +137,42 @@ defmodule SimpleTokenAuthenticationTest do
 
       # Invoke the plug
       conn = SimpleTokenAuthentication.call(conn, opts(token: "fake_token"))
+
+      # Assert the response and status
+      assert conn.status != 401
+    end
+  end
+
+  describe "with a valid token from anonymous function" do
+    test "returns a 200 status code" do
+      token = fn -> "fake_token" end
+
+      # Create a test connection
+      conn =
+        :get
+        |> conn("/foo")
+        |> put_req_header("authorization", "fake_token")
+
+      # Invoke the plug
+      conn = SimpleTokenAuthentication.call(conn, opts(token: token))
+
+      # Assert the response and status
+      assert conn.status != 401
+    end
+  end
+
+  describe "with a valid token from module function" do
+    test "returns a 200 status code" do
+      token = {SimpleTokenAuthenticationTest, :get_fake_token}
+
+      # Create a test connection
+      conn =
+        :get
+        |> conn("/foo")
+        |> put_req_header("authorization", "fake_token")
+
+      # Invoke the plug
+      conn = SimpleTokenAuthentication.call(conn, opts(token: token))
 
       # Assert the response and status
       assert conn.status != 401
