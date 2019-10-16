@@ -5,27 +5,35 @@ defmodule SimpleTokenAuthentication do
   A plug that checks for presence of a simple token for authentication
   """
   @behaviour Plug
-  def init(opts), do: opts
 
-  def call(conn, _opts) do
-    token = Application.get_env(:simple_token_authentication, :token)
-
-    val = get_auth_header(conn)
-
-    if token && String.trim(token) != "" && val == token do
-      conn
+  def init(opts) do
+    with token when is_binary(token) <- Keyword.get_lazy(opts, :token, &get_token_from_env/0),
+         token when token != "" <- String.trim(token) do
+      token
     else
-      conn
-      |> put_resp_content_type("application/json")
-      |> send_resp(401, ~s({ "error": "Invalid shared key" }))
-      |> halt
+      _ -> nil
     end
   end
 
-  defp get_auth_header(conn) do
+  def call(conn, nil) do
+    send_401(conn, "Shared key not set")
+  end
+
+  def call(conn, token) do
     case get_req_header(conn, "authorization") do
-      [val | _] -> val
-      _ -> nil
+      [^token | _] -> conn
+      _ -> send_401(conn, "Invalid shared key")
     end
+  end
+
+  defp get_token_from_env do
+    Application.get_env(:simple_token_authentication, :token)
+  end
+
+  defp send_401(conn, error) when is_binary(error) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(401, ~s({ "error": "#{error}" }))
+    |> halt()
   end
 end
