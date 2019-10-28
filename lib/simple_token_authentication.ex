@@ -1,5 +1,6 @@
 defmodule SimpleTokenAuthentication do
   import Plug.Conn
+  import Plug.Crypto, only: [secure_compare: 2]
 
   @moduledoc """
   A plug that checks for presence of a simple token for authentication
@@ -12,7 +13,7 @@ defmodule SimpleTokenAuthentication do
 
     val = get_auth_header(conn)
 
-    if token && String.trim(token) != "" && val == token do
+    if token && String.trim(token) != "" && secure_compare(token, val) do
       conn
     else
       conn
@@ -25,7 +26,7 @@ defmodule SimpleTokenAuthentication do
   defp get_auth_header(conn) do
     case get_req_header(conn, "authorization") do
       [val | _] -> val
-      _ -> nil
+      _ -> ""
     end
   end
 end
