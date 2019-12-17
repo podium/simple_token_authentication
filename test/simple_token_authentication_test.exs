@@ -91,4 +91,38 @@ defmodule SimpleTokenAuthenticationTest do
       end
     end
   end
+
+  describe "with multiple tokens" do
+    test "returns a 200 status code if one of the tokens matches" do
+      with_token(["bad_token", "fake_token"]) do
+        # Create a test connection
+        conn =
+          :get
+          |> conn("/foo")
+          |> put_req_header("authorization", "fake_token")
+
+        # Invoke the plug
+        conn = SimpleTokenAuthentication.call(conn, @opts)
+
+        # Assert the response and status
+        assert conn.status != 401
+      end
+    end
+
+    test "returns a 401 status code if none of the tokens matches" do
+      with_token(["bad_token", "other_bad_token"]) do
+        # Create a test connection
+        conn =
+          :get
+          |> conn("/foo")
+          |> put_req_header("authorization", "fake_token")
+
+        # Invoke the plug
+        conn = SimpleTokenAuthentication.call(conn, @opts)
+
+        # Assert the response and status
+        assert conn.status == 401
+      end
+    end
+  end
 end
