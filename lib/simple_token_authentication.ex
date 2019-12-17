@@ -34,8 +34,8 @@ defmodule SimpleTokenAuthentication do
     end
   end
 
-  defp matches?(token, value) when is_binary(token) and is_binary(value), do: String.trim(token) != "" && secure_compare(token, value)
+  defp matches?(token, value) when is_binary(token) and is_binary(value),
+    do: String.trim(token) != "" && secure_compare(token, value)
 
   defp matches?(_, _), do: false
-
 end
