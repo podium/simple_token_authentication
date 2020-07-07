@@ -39,6 +39,21 @@
 
   3. Configure your token in `config.exs`:
   ```elixir
-  config :simple_token_authentication, token: "your-token-here"
+  config :simple_token_authentication,
+    token: "your-token-here",
+    service_tokens: [
+      service_a: "service-a-token",
+      service_b: "service-b-token"
+    ]
   ```
 
+  4. Configure your connecting application to pass a token in the `authorization` header, e.g.:
+  ```elixir
+  put_header("authorization", "your-token-here")
+  ```
+  
+## Notes
+  - token value can be a comma-separated list of tokens
+  - specifying `service_tokens` is optional
+  - auth will succeed if token exists in *either* list (`token` or `service_tokens`)
+  - Use of a service token will add "service_name" to `Logging.metadata`
