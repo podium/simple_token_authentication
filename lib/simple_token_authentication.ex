@@ -1,7 +1,5 @@
 defmodule SimpleTokenAuthentication do
   import Plug.Conn
-  import Plug.Crypto, only: [secure_compare: 2]
-
   require Logger
 
   @moduledoc """
@@ -40,13 +38,11 @@ defmodule SimpleTokenAuthentication do
     end
   end
 
-  def build_token_map() do
-    tokens =
+  def build_token_map do
+    global =
       :simple_token_authentication
       |> Application.get_env(:token)
       |> List.wrap()
-
-    token_map = build_map_from_token_list(tokens, :global)
 
     services =
       :simple_token_authentication
@@ -54,25 +50,16 @@ defmodule SimpleTokenAuthentication do
       |> List.wrap()
 
     token_map =
-      Enum.reduce(services, token_map, fn {name, tokens}, acc ->
-        service_map = build_map_from_token_list(List.wrap(tokens), name)
-        Map.merge(acc, service_map)
-      end)
+      for {service, tokens} <- [{:global, global} | services],
+          token <- List.wrap(tokens),
+          token != "",
+          reduce: %{} do
+        acc ->
+          Map.put(acc, token, service)
+      end
 
     :persistent_term.put(:simple_token_authentication_map, token_map)
 
     token_map
-  end
-
-  def build_map_from_token_list(tokens, service_name) do
-    Enum.reduce(tokens, %{}, fn token, acc ->
-      case token do
-        "" ->
-          acc
-
-        _ ->
-          Map.put(acc, token, service_name)
-      end
-    end)
   end
 end
