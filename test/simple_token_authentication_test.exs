@@ -1,7 +1,7 @@
 defmodule SimpleTokenAuthenticationTest do
   use ExUnit.Case, async: false
   use Plug.Test
-  
+
   import ExUnit.CaptureLog
   require Logger
 
@@ -14,13 +14,18 @@ defmodule SimpleTokenAuthenticationTest do
       Application.put_env(:simple_token_authentication, :token, nil)
     end
   end
-  
+
   defmacro with_service_tokens(tokens, do: expression) do
     quote do
       Application.put_env(:simple_token_authentication, :service_tokens, unquote(tokens))
       unquote(expression)
       Application.put_env(:simple_token_authentication, :service_tokens, nil)
     end
+  end
+
+  setup do
+    :persistent_term.erase(:simple_token_authentication_map)
+    :ok
   end
 
   describe "without a token" do
@@ -63,6 +68,7 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status == 401
+        assert conn.assigns[:simple_token_auth_service] == nil
       end
     end
   end
@@ -99,6 +105,7 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status != 401
+        assert conn.assigns[:simple_token_auth_service] == :global
       end
     end
   end
@@ -117,6 +124,7 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status != 401
+        assert conn.assigns[:simple_token_auth_service] == :global
       end
     end
 
@@ -133,13 +141,14 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status == 401
+        assert conn.assigns[:simple_token_auth_service] == nil
       end
     end
   end
-  
+
   describe "with service tokens" do
     test "logs the service name" do
-      with_service_tokens([test_service: "test_token"]) do
+      with_service_tokens(test_service: "test_token") do
         # Create a test connection
         conn =
           :get
@@ -147,15 +156,18 @@ defmodule SimpleTokenAuthenticationTest do
           |> put_req_header("authorization", "test_token")
 
         # Invoke the plug
+        conn = SimpleTokenAuthentication.call(conn, @opts)
+
         assert capture_log(fn ->
-          SimpleTokenAuthentication.call(conn, @opts)
-          Logger.info("test log message")
-        end) =~ "service_name=test_service"
+                 Logger.info("test log message")
+               end) =~ "service_name=test_service"
+
+        assert conn.assigns[:simple_token_auth_service] == :test_service
       end
     end
-    
+
     test "returns a 401 status code if none of the service tokens matches" do
-      with_service_tokens([bad: "bad_token", other: "other_bad_token"]) do
+      with_service_tokens(bad: "bad_token", other: "other_bad_token") do
         # Create a test connection
         conn =
           :get
@@ -167,6 +179,7 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status == 401
+        assert conn.assigns[:simple_token_auth_service] == nil
       end
     end
   end
