@@ -1,7 +1,5 @@
 defmodule SimpleTokenAuthentication do
   import Plug.Conn
-  import Plug.Crypto, only: [secure_compare: 2]
-  
   require Logger
 
   @moduledoc """
@@ -12,19 +10,19 @@ defmodule SimpleTokenAuthentication do
 
   def call(conn, _opts) do
     val = get_auth_header(conn)
-    
-    tokens =
-      :simple_token_authentication
-      |> Application.get_env(:token)
-      |> List.wrap()
-      
-    service_tokens =
-      :simple_token_authentication
-      |> Application.get_env(:service_tokens)
-      |> List.wrap()
 
-    if Enum.any?(tokens ++ service_tokens, &matches?(&1, val)) do
-      conn
+    token_map =
+      case :persistent_term.get(:simple_token_authentication_map, nil) do
+        nil ->
+          build_token_map()
+
+        val ->
+          val
+      end
+
+    if service_name = token_map[val] do
+      Logger.metadata(service_name: service_name)
+      assign(conn, :simple_token_auth_service, service_name)
     else
       conn
       |> put_resp_content_type("application/json")
@@ -40,17 +38,28 @@ defmodule SimpleTokenAuthentication do
     end
   end
 
-  defp matches?(token, value) when is_binary(token) and is_binary(value),
-    do: String.trim(token) != "" && secure_compare(token, value)
-    
-  defp matches?(token, value) when is_tuple(token) and is_binary(value) do
-    if matches?(elem(token, 1), value) do
-      Logger.metadata(service_name: elem(token, 0))
-      true
-    else
-      false
-    end
-  end
+  def build_token_map do
+    global =
+      :simple_token_authentication
+      |> Application.get_env(:token)
+      |> List.wrap()
 
-  defp matches?(_, _), do: false
+    services =
+      :simple_token_authentication
+      |> Application.get_env(:service_tokens)
+      |> List.wrap()
+
+    token_map =
+      for {service, tokens} <- [{:global, global} | services],
+          token <- List.wrap(tokens),
+          token != "",
+          reduce: %{} do
+        acc ->
+          Map.put(acc, token, service)
+      end
+
+    :persistent_term.put(:simple_token_authentication_map, token_map)
+
+    token_map
+  end
 end
