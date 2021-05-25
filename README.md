@@ -25,7 +25,7 @@
 
   ```elixir
   def deps do
-    [{:simple_token_authentication, "~> 0.1.0"}]
+    [{:simple_token_authentication, "~> 0.6.0"}]
   end
   ```
 
@@ -57,3 +57,4 @@
   - specifying `service_tokens` is optional
   - auth will succeed if token exists in *either* list (`token` or `service_tokens`)
   - Use of a service token will add "service_name" to `Logging.metadata`
+  - Service can be identified in the conn.assigns[:simple_token_auth_service] . Will be the name of the service or :global when matching the token key
