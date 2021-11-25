@@ -1,6 +1,7 @@
 defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/SRVentures/simple_token_authentication"
   @version "0.6.0"
 
   def project do
@@ -12,49 +13,54 @@ defmodule SimpleTokenAuthentication.Mixfile do
       package: package(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: docs()
     ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger, :plug]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
       {:credo, "~> 1.0", only: [:dev, :test]},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:plug, ">= 1.3.0"}
     ]
   end
 
   defp description do
     """
-    A plug that checks for presence of a simple token for authentication
     """
   end
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README*"],
+      description: "A plug that checks for presence of a simple token "
+        <> "for authentication",
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Travis Elnicky", "Arthur Weagel"],
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/SRVentures/simple_token_authentication",
-        "Docs" => "https://hexdocs.pm/simple_token_authentication/#{@version}/"
+        "Changelog" => "https://hexdocs.pm/simple_token_authentication/changelog.html",
+        "GitHub" => @source_url
       }
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "CHANGELOG.md": [],
+        "LICENSE.md": [title: "License"],
+        "README.md": [title: "Overview"]
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: "v#{@version}",
+      formatters: ["html"],
+      api_reference: false
     ]
   end
 end
