@@ -1,8 +1,8 @@
 # SimpleTokenAuthentication
 
-[![Build Status](https://github.com/ExHammer/hammer/actions/workflows/ci.yml/badge.svg)](https://github.com/ExHammer/hammer/actions/workflows/ci.yml) [![Hex.pm](https://img.shields.io/hexpm/v/hammer.svg)](https://hex.pm/packages/hammer) [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/hammer)
-[![Total Download](https://img.shields.io/hexpm/dt/hammer.svg)](https://hex.pm/packages/hammer)
-[![License](https://img.shields.io/hexpm/l/hammer.svg)](https://github.com/ExHammer/hammer/blob/master/LICENSE.md)
+[![Build Status](https://github.com/podium/simple_token_authentication/actions/workflows/ci.yml/badge.svg)](https://github.com/podium/simple_token_authentication/actions/workflows/ci.yml) [![Hex.pm](https://img.shields.io/hexpm/v/simple_token_authentication.svg)](https://hex.pm/packages/simple_token_authentication) [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/simple_token_authentication)
+[![Total Download](https://img.shields.io/hexpm/dt/simple_token_authentication.svg)](https://hex.pm/packages/simple_token_authentication)
+[![License](https://img.shields.io/hexpm/l/simple_token_authentication.svg)](https://github.com/podium/simple_token_authentication/blob/master/LICENSE.md)
 ## Usage
 ### Phoenix Integration
   - Inside `web/router.ex` file, add plug to your pipeline like so:
