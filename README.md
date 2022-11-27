@@ -1,17 +1,20 @@
 # SimpleTokenAuthentication
 
+[![Build Status](https://github.com/ExHammer/hammer/actions/workflows/ci.yml/badge.svg)](https://github.com/ExHammer/hammer/actions/workflows/ci.yml) [![Hex.pm](https://img.shields.io/hexpm/v/hammer.svg)](https://hex.pm/packages/hammer) [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/hammer)
+[![Total Download](https://img.shields.io/hexpm/dt/hammer.svg)](https://hex.pm/packages/hammer)
+[![License](https://img.shields.io/hexpm/l/hammer.svg)](https://github.com/ExHammer/hammer/blob/master/LICENSE.md)
 ## Usage
 ### Phoenix Integration
   - Inside `web/router.ex` file, add plug to your pipeline like so:
-  
+
   ```elixir
   defmodule MyApp.Router
     use Phoenix.Router
-    
+
     pipeline :api do
       plug SimpleTokenAuthentication
     end
-    
+
     scope "/", MyApp do
       pipe_through :api
       get "/hello", HelloController, :hello
@@ -51,7 +54,7 @@
   ```elixir
   put_header("authorization", "your-token-here")
   ```
-  
+
 ## Notes
   - token value can be a comma-separated list of tokens
   - specifying `service_tokens` is optional

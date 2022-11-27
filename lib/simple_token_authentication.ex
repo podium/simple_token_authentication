@@ -1,11 +1,12 @@
 defmodule SimpleTokenAuthentication do
-  import Plug.Conn
-  require Logger
-
   @moduledoc """
   A plug that checks for presence of a simple token for authentication
   """
   @behaviour Plug
+
+  import Plug.Conn
+  require Logger
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
