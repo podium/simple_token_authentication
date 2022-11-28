@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.7.0] (2022-11-28)
+### Changed
+ * Upgrade dependencies
+ * Clean up some docs
+ * some internal code cleaning
+ * ** Breaking **  Support Elixir 1.11 and above
 ## [0.6.0] (2021-05-24)
 ### Changed
  * Upgrade dependencies
