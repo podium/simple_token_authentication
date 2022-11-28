@@ -15,7 +15,7 @@ defmodule SimpleTokenAuthentication.Mixfile do
       deps: deps(),
       docs: docs(),
       package: package(),
-      test_coverage: [summary: [threshold: 90]]
+      test_coverage: [summary: [threshold: 70]]
     ]
   end
 
