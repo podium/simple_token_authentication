@@ -2,13 +2,13 @@ defmodule SimpleTokenAuthentication.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/podium/simple_token_authentication"
-  @version "0.6.0"
+  @version "0.7.0"
 
   def project do
     [
       app: :simple_token_authentication,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.11",
       description: "A plug that checks for presence of a simple token for authentication",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
