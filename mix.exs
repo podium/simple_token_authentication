@@ -13,6 +13,11 @@ defmodule SimpleTokenAuthentication.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: [
+        ignore_warnings: ".dialyzer.ignore-warnings",
+        list_unused_filters: true,
+        plt_add_apps: [:mix]
+      ],
       docs: docs(),
       package: package(),
       test_coverage: [summary: [threshold: 90]]
@@ -20,12 +25,13 @@ defmodule SimpleTokenAuthentication.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :plug]]
+    [extra_applications: [:logger, :plug]]
   end
 
   defp deps do
     [
       {:credo, "~> 1.6", only: [:dev, :test]},
+      {:dialyxir, "~> 1.4", only: :dev, runtime: false},
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:plug, ">= 1.3.0"}
     ]
@@ -48,7 +54,6 @@ defmodule SimpleTokenAuthentication.Mixfile do
     [
       name: :simple_token_authentication,
       files: ["lib", "mix.exs", "README*"],
-      maintainers: ["Travis Elnicky", "Arthur Weagel"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/podium/simple_token_authentication",
