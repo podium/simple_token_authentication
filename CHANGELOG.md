@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [0.7.0] (2024-10-01)
+## [0.8.0] (2024-10-01)
 
 * Remove support for Elixir 1.11, 1.12 and 1.13. Minimum is Elixir 1.14
 
