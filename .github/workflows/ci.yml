@@ -60,7 +60,7 @@ jobs:
   dialyzer:
     runs-on: ubuntu-22.04
     env:
-      MIX_ENV: test
+      MIX_ENV: dev
 
     steps:
       - uses: actions/checkout@v4
