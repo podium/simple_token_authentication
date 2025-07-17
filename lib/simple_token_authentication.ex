@@ -9,13 +9,14 @@ defmodule SimpleTokenAuthentication do
 
   def init(opts), do: opts
 
-  def call(conn, _opts) do
+  def call(conn, opts) do
+    realm = Keyword.get(opts, :auth_realm)
     val = get_auth_header(conn)
 
     token_map =
-      case :persistent_term.get(:simple_token_authentication_map, nil) do
+      case :persistent_term.get(store(realm), nil) do
         nil ->
-          build_token_map()
+          build_token_map(realm)
 
         val ->
           val
@@ -39,16 +40,9 @@ defmodule SimpleTokenAuthentication do
     end
   end
 
-  def build_token_map do
-    global =
-      :simple_token_authentication
-      |> Application.get_env(:token)
-      |> List.wrap()
-
-    services =
-      :simple_token_authentication
-      |> Application.get_env(:service_tokens)
-      |> List.wrap()
+  defp build_token_map(nil) do
+    global = token()
+    services = service_tokens(nil)
 
     token_map =
       for {service, tokens} <- [{:global, global} | services],
@@ -59,8 +53,52 @@ defmodule SimpleTokenAuthentication do
           Map.put(acc, token, service)
       end
 
-    :persistent_term.put(:simple_token_authentication_map, token_map)
+    :persistent_term.put(store(nil), token_map)
 
     token_map
+  end
+
+  defp build_token_map(realm) do
+    services = service_tokens(realm)
+
+    token_map =
+      for {service, tokens} <- services,
+          token <- List.wrap(tokens),
+          token != "",
+          reduce: %{} do
+        acc ->
+          Map.put(acc, token, service)
+      end
+
+    :persistent_term.put(store(realm), token_map)
+
+    token_map
+  end
+
+  defp service_tokens(nil) do
+    :simple_token_authentication
+    |> Application.get_env(:service_tokens)
+    |> List.wrap()
+  end
+
+  defp service_tokens(realm) do
+    :simple_token_authentication
+    |> Application.get_env(realm)
+    |> Keyword.get(:service_tokens)
+    |> List.wrap()
+  end
+
+  defp token do
+    :simple_token_authentication
+    |> Application.get_env(:token)
+    |> List.wrap()
+  end
+
+  defp store(nil) do
+    :default
+  end
+
+  defp store(realm) do
+    realm
   end
 end

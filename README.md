@@ -55,6 +55,38 @@ config :simple_token_authentication,
 put_header("authorization", "your-token-here")
 ```
 
+## Realm
+
+Optionally, you can add a realm to the simple auth. This allows services to use the plug multiple times with different realms
+For example:
+
+Configure your token under a named realm in `config.exs`:
+```elixir
+config :simple_token_authentication,
+  another_realm: [
+    service_tokens: [
+      service_a: "service-a-token",
+      service_b: "service-b-token"
+    ]
+  ]
+```
+
+Pass that name when configuring the plug:
+```elixir
+defmodule MyApp.Router
+  use Phoenix.Router
+
+  pipeline :api do
+    plug SimpleTokenAuthentication, auth_realm: :another_realm
+  end
+
+  scope "/", MyApp do
+    pipe_through :api
+    get "/hello", HelloController, :hello
+  end
+end
+```
+
 ## Notes
 
 - Token value can be a comma-separated list of tokens
@@ -65,7 +97,7 @@ put_header("authorization", "your-token-here")
 
 ## Copyright and License
 
-Copyright (c) 2016 Podium
+Copyright (c) 2025 Podium
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.
