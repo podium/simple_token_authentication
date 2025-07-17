@@ -23,9 +23,11 @@ defmodule SimpleTokenAuthenticationTest do
     end
   end
 
-  defmacro with_other_realm_token(token, do: expression) do
+  defmacro with_other_realm_service_tokens(token, do: expression) do
     quote do
-      Application.put_env(:simple_token_authentication, :another_realm, token: unquote(token))
+      Application.put_env(:simple_token_authentication, :another_realm,
+        service_tokens: unquote(token)
+      )
 
       unquote(expression)
       Application.put_env(:simple_token_authentication, :another_realm, token: nil)
@@ -33,8 +35,8 @@ defmodule SimpleTokenAuthenticationTest do
   end
 
   setup do
-    :persistent_term.erase(:simple_token_authentication_map)
-    :persistent_term.erase(:simple_token_authentication_another_realm_map)
+    :persistent_term.erase(:default)
+    :persistent_term.erase(:another_realm)
 
     :ok
   end
@@ -217,7 +219,7 @@ defmodule SimpleTokenAuthenticationTest do
 
   describe "another_realm_simple_token_authentication - handles the lack of an auth header" do
     test "returns a 401 status code" do
-      with_other_realm_token("fake_token") do
+      with_other_realm_service_tokens(test_service: "fake_token") do
         conn =
           :get
           |> conn("/foo")
@@ -230,7 +232,7 @@ defmodule SimpleTokenAuthenticationTest do
 
   describe "another_realm_simple_token_authentication - empty token" do
     test "returns a 401 status code" do
-      with_other_realm_token("") do
+      with_other_realm_service_tokens("") do
         # Create a test connection
         conn =
           :get
@@ -252,7 +254,7 @@ defmodule SimpleTokenAuthenticationTest do
 
   describe "another_realm_simple_token_authentication - with an invalid token" do
     test "returns a 401 status code" do
-      with_other_realm_token("fake_token") do
+      with_other_realm_service_tokens(test_service: "fake_token") do
         # Create a test connection
         conn =
           :get
@@ -271,7 +273,7 @@ defmodule SimpleTokenAuthenticationTest do
 
   describe "another_realm_simple_token_authentication - with a valid token" do
     test "returns a 200 status code" do
-      with_other_realm_token("fake_token") do
+      with_other_realm_service_tokens(test_service: "fake_token") do
         # Create a test connection
         conn =
           :get
@@ -284,66 +286,8 @@ defmodule SimpleTokenAuthenticationTest do
 
         # Assert the response and status
         assert conn.status != 401
-        assert conn.assigns[:simple_token_auth_service] == :global
+        assert conn.assigns[:simple_token_auth_service] == :test_service
       end
-    end
-  end
-
-  describe "another_realm_simple_token_authentication - with multiple tokens" do
-    test "returns a 200 status code if one of the tokens matches" do
-      Application.put_env(:simple_token_authentication, :another_realm, token: nil)
-
-      Application.put_env(:simple_token_authentication, :another_realm,
-        token: [
-          "bad_token",
-          "fake_token"
-        ]
-      )
-
-      # Create a test connection
-      conn =
-        :get
-        |> conn("/foo")
-        |> put_req_header("authorization", "fake_token")
-
-      # Invoke the plug with another realm
-      conn =
-        SimpleTokenAuthentication.call(conn,
-          auth_realm: :another_realm
-        )
-
-      # Assert the response and status
-      assert conn.status != 401
-      assert conn.assigns[:simple_token_auth_service] == :global
-
-      Application.put_env(:simple_token_authentication, :another_realm, token: nil)
-    end
-
-    test "returns a 401 status code if none of the tokens matches" do
-      Application.put_env(:simple_token_authentication, :another_realm,
-        token: [
-          "bad_token",
-          "other_bad_token"
-        ]
-      )
-
-      # Create a test connection
-      conn =
-        :get
-        |> conn("/foo")
-        |> put_req_header("authorization", "fake_token")
-
-      # Invoke the plug with another realm
-      conn =
-        SimpleTokenAuthentication.call(conn,
-          auth_realm: :another_realm
-        )
-
-      # Assert the response and status
-      assert conn.status == 401
-      assert conn.assigns[:simple_token_auth_service] == nil
-
-      Application.put_env(:simple_token_authentication, :another_realm, token: nil)
     end
   end
 
@@ -407,8 +351,27 @@ defmodule SimpleTokenAuthenticationTest do
 
   describe "cross-realm authentication failures" do
     test "another_realm token cannot authenticate against default realm" do
-      with_other_realm_token("another_realm_token") do
+      with_other_realm_service_tokens(test_servce: "another_realm_token") do
         with_token("default_realm_token") do
+          # Create a test connection with another_realm token
+          conn =
+            :get
+            |> conn("/foo")
+            |> put_req_header("authorization", "another_realm_token")
+
+          # Invoke the plug with default realm (no auth_realm option)
+          conn = SimpleTokenAuthentication.call(conn, @opts)
+
+          # Assert the response and status - should fail
+          assert conn.status == 401
+          assert conn.assigns[:simple_token_auth_service] == nil
+        end
+      end
+    end
+
+    test "another_realm token cannot authenticate against default serivce token" do
+      with_other_realm_service_tokens(test_service: "another_realm_token") do
+        with_service_tokens(test_service: "default_realm_service_token") do
           # Create a test connection with another_realm token
           conn =
             :get
@@ -427,7 +390,7 @@ defmodule SimpleTokenAuthenticationTest do
 
     test "default realm token cannot authenticate against another_realm" do
       with_token("default_realm_token") do
-        with_other_realm_token("another_realm_token") do
+        with_other_realm_service_tokens(test_service: "another_realm_token") do
           # Create a test connection with default realm token
           conn =
             :get

@@ -64,7 +64,6 @@ Configure your token under a named realm in `config.exs`:
 ```elixir
 config :simple_token_authentication,
   another_realm: [
-    token: "your-token-here",
     service_tokens: [
       service_a: "service-a-token",
       service_b: "service-b-token"
@@ -88,7 +87,6 @@ defmodule MyApp.Router
 end
 ```
 
-
 ## Notes
 
 - Token value can be a comma-separated list of tokens
@@ -99,7 +97,7 @@ end
 
 ## Copyright and License
 
-Copyright (c) 2016 Podium
+Copyright (c) 2025 Podium
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.

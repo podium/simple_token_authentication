@@ -40,12 +40,29 @@ defmodule SimpleTokenAuthentication do
     end
   end
 
-  def build_token_map(realm) do
-    global = token(realm)
-    services = service_tokens(realm)
+  defp build_token_map(nil) do
+    global = token()
+    services = service_tokens(nil)
 
     token_map =
       for {service, tokens} <- [{:global, global} | services],
+          token <- List.wrap(tokens),
+          token != "",
+          reduce: %{} do
+        acc ->
+          Map.put(acc, token, service)
+      end
+
+    :persistent_term.put(store(nil), token_map)
+
+    token_map
+  end
+
+  defp build_token_map(realm) do
+    services = service_tokens(realm)
+
+    token_map =
+      for {service, tokens} <- services,
           token <- List.wrap(tokens),
           token != "",
           reduce: %{} do
@@ -71,24 +88,17 @@ defmodule SimpleTokenAuthentication do
     |> List.wrap()
   end
 
-  defp token(nil) do
+  defp token do
     :simple_token_authentication
     |> Application.get_env(:token)
     |> List.wrap()
   end
 
-  defp token(realm) do
-    :simple_token_authentication
-    |> Application.get_env(realm)
-    |> Keyword.get(:token)
-    |> List.wrap()
-  end
-
   defp store(nil) do
-    :simple_token_authentication_map
+    :default
   end
 
   defp store(realm) do
-    String.to_atom("simple_token_authentication_" <> Atom.to_string(realm) <> "_map")
+    realm
   end
 end
