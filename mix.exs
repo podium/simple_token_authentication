@@ -41,8 +41,8 @@ defmodule SimpleTokenAuthentication.Mixfile do
     [
       main: "readme",
       extras: [
-        "CHANGELOG.md",
-        {:"README.md", title: "Readme"}
+        {:"README.md", title: "Readme"},
+        "CHANGELOG.md"
       ],
       source_url: @source_url,
       source_ref: "v#{@version}",
