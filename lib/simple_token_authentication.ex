@@ -22,15 +22,23 @@ defmodule SimpleTokenAuthentication do
           val
       end
 
-    if service_name = token_map[val] do
-      Logger.metadata(service_name: service_name)
-      assign(conn, :simple_token_auth_service, service_name)
-    else
-      conn
-      |> put_resp_content_type("application/json")
-      |> send_resp(401, ~s({ "error": "Invalid shared key" }))
-      |> halt()
+    case secure_lookup(token_map, val) do
+      {:ok, service_name} ->
+        Logger.metadata(service_name: service_name)
+        assign(conn, :simple_token_auth_service, service_name)
+
+      :error ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(401, ~s({ "error": "Invalid shared key" }))
+        |> halt()
     end
+  end
+
+  defp secure_lookup(token_map, val) do
+    Enum.find_value(token_map, :error, fn {token, service_name} ->
+      if Plug.Crypto.secure_compare(token, val), do: {:ok, service_name}
+    end)
   end
 
   defp get_auth_header(conn) do

@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.9.1] (2026-02-17)
+### Fixed
+* Use constant-time comparison (`Plug.Crypto.secure_compare/2`) for token lookup to prevent timing attacks
+
 ## [0.9.0] (2025-07-17)
 ### Changed
 * Added ability to optionally add a realm to the simple auth. Allowing services to use the plug multiple times
